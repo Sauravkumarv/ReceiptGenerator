@@ -9,22 +9,35 @@ export const RECEIPT_ACTIONS = {
 }
 
 export const INITIAL_STATE = {
-  storeName: 'ABC RETAIL STORE',
-  storeAddress: '123 Main Street, Hometown',
-  storePhone: '+1-234-567-8901',
-  receiptNumber: '00123',
-  date: new Date().toISOString().split('T')[0],
+  storeName: '',
+  storeAddress: '',
+  storePhone: '',
+  storeEmail: '',
+  storeWebsite: '',
+  receiptNumber: '',
+  receiptDate: new Date().toISOString().split('T')[0],
+  dueDate: '',
+  referenceNumber: '',
+  paymentStatus: 'paid',
+  paymentMethod: 'cash',
+  notes: '',
   billTo: {
-    name: 'John Doe',
-    address: '789 Market Avenue, Hometown',
-    email: 'john.doe@example.com'
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    taxId: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: ''
+    }
   },
-  items: [
-    { name: 'Widget A', qty: 2, unitPrice: 15.00 },
-    { name: 'Widget B', qty: 1, unitPrice: 25.00 }
-  ],
-  discount: 5.50,
-  taxRate: 7.2
+  items: [],
+  discount: 0,
+  taxRate: 0
 }
 
 export const RECEIPT_TEMPLATES = {

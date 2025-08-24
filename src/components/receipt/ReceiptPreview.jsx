@@ -10,11 +10,37 @@ const ReceiptPreview = () => {
   const { subtotal, tax, total } = useReceiptCalculations(state)
   const receiptRef = useRef()
 
-  const handleDownload = () => {
-    downloadService.downloadReceipt(state, { subtotal, tax, total })
+  // Check if bill is ready for download/print
+  const isBillReady = () => {
+    return (
+      state.storeName && 
+      state.storeName.trim() !== '' &&
+      state.billTo.name && 
+      state.billTo.name.trim() !== '' &&
+      state.items.length > 0 &&
+      state.items.some(item => item.name && item.name.trim() !== '')
+    )
+  }
+
+  const handleDownload = async () => {
+    if (!isBillReady()) {
+      alert('Please fill in store name, customer name, and add at least one item before downloading.')
+      return
+    }
+    
+    try {
+      await downloadService.downloadReceipt(state, { subtotal, tax, total })
+    } catch (error) {
+      console.error('Download failed:', error)
+      alert('Download failed. Please try again.')
+    }
   }
 
   const handlePrint = () => {
+    if (!isBillReady()) {
+      alert('Please fill in store name, customer name, and add at least one item before printing.')
+      return
+    }
     downloadService.printReceipt()
   }
 
@@ -28,12 +54,24 @@ const ReceiptPreview = () => {
         <p className="mt-2 opacity-90">Live preview of your receipt</p>
       </div>
       
-      <div ref={receiptRef} className="p-8 bg-white font-mono text-sm receipt-preview">
+      <div ref={receiptRef} className="p-8 bg-white font-mono text-sm receipt-preview" id="receipt-content">
         {/* Receipt Header */}
         <div className="text-center mb-8 receipt-header">
-          <h1 className="text-2xl font-bold mb-3 text-gray-800">{state.storeName}</h1>
-          <p className="text-gray-600 mb-1">{state.storeAddress}</p>
-          <p className="text-gray-600">Phone: {state.storePhone}</p>
+          <h1 className="text-2xl font-bold mb-3 text-gray-800">
+            {state.storeName || 'Your Store Name'}
+          </h1>
+          <p className="text-gray-600 mb-1">
+            {state.storeAddress || 'Store Address'}
+          </p>
+          <p className="text-gray-600">
+            Phone: {state.storePhone || 'Phone Number'}
+          </p>
+          {state.storeEmail && (
+            <p className="text-gray-600">Email: {state.storeEmail}</p>
+          )}
+          {state.storeWebsite && (
+            <p className="text-gray-600">Website: {state.storeWebsite}</p>
+          )}
         </div>
 
         {/* Receipt Info */}
@@ -42,11 +80,11 @@ const ReceiptPreview = () => {
           <div className="grid grid-cols-2 gap-4 text-left">
             <div>
               <span className="font-bold">RECEIPT #:</span>
-              <span className="ml-2">{state.receiptNumber}</span>
+              <span className="ml-2">{state.receiptNumber || 'Not set'}</span>
             </div>
             <div>
               <span className="font-bold">DATE:</span>
-              <span className="ml-2">{state.date}</span>
+              <span className="ml-2">{state.receiptDate}</span>
             </div>
           </div>
         </div>
@@ -55,9 +93,15 @@ const ReceiptPreview = () => {
         <div className="mb-8 receipt-section">
           <h3 className="font-bold mb-3 text-lg border-b border-gray-400 pb-1">BILL TO:</h3>
           <div className="space-y-1">
-            <p className="font-semibold">{state.billTo.name}</p>
-            <p className="text-gray-700">{state.billTo.address}</p>
-            <p className="text-gray-700">{state.billTo.email}</p>
+            <p className="font-semibold">{state.billTo.name || 'Customer Name'}</p>
+            <p className="text-gray-700">
+              {state.billTo.address.street && `${state.billTo.address.street}, `}
+              {state.billTo.address.city && `${state.billTo.address.city}, `}
+              {state.billTo.address.state && `${state.billTo.address.state} `}
+              {state.billTo.address.zip && `${state.billTo.address.zip}`}
+              {state.billTo.address.country && `, ${state.billTo.address.country}`}
+            </p>
+            <p className="text-gray-700">{state.billTo.email || 'customer@example.com'}</p>
           </div>
         </div>
 
@@ -72,14 +116,21 @@ const ReceiptPreview = () => {
             </div>
           </div>
           
-          {state.items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-2 mb-2 py-1 border-b border-gray-200">
-              <div className="col-span-5 text-left">{item.name || 'Unnamed Item'}</div>
-              <div className="col-span-2 text-center">{item.qty}</div>
-              <div className="col-span-3 text-right">${item.unitPrice.toFixed(2)}</div>
-              <div className="col-span-2 text-right font-semibold">${(item.qty * item.unitPrice).toFixed(2)}</div>
+          {state.items.length > 0 ? (
+            state.items.map((item, index) => (
+              <div key={index} className="grid grid-cols-12 gap-2 mb-2 py-1 border-b border-gray-200">
+                <div className="col-span-5 text-left">{item.name || 'Unnamed Item'}</div>
+                <div className="col-span-2 text-center">{item.qty || 0}</div>
+                <div className="col-span-3 text-right">${(item.unitPrice || 0).toFixed(2)}</div>
+                <div className="col-span-2 text-right font-semibold">${((item.qty || 0) * (item.unitPrice || 0)).toFixed(2)}</div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500 border-b border-gray-200">
+              <p>No items added yet</p>
+              <p className="text-sm">Add items in the form to see them here</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Totals */}
@@ -123,8 +174,10 @@ const ReceiptPreview = () => {
           size="full"
           onClick={handleDownload}
           icon={Download}
+          disabled={!isBillReady()}
+          className={!isBillReady() ? 'opacity-50 cursor-not-allowed' : ''}
         >
-          Download Receipt
+          {isBillReady() ? 'Download PDF Receipt' : 'Fill form to enable download'}
         </Button>
         
         <div className="grid grid-cols-2 gap-3">
@@ -132,16 +185,27 @@ const ReceiptPreview = () => {
             variant="outline"
             onClick={handlePrint}
             icon={Printer}
+            disabled={!isBillReady()}
+            className={!isBillReady() ? 'opacity-50 cursor-not-allowed' : ''}
           >
-            Print
+            {isBillReady() ? 'Print' : 'Fill form to enable print'}
           </Button>
           <Button
             variant="outline"
             icon={Share2}
+            disabled={!isBillReady()}
+            className={!isBillReady() ? 'opacity-50 cursor-not-allowed' : ''}
           >
-            Share
+            {isBillReady() ? 'Share' : 'Fill form to enable share'}
           </Button>
         </div>
+        
+        {!isBillReady() && (
+          <div className="text-center text-sm text-gray-500 mt-2">
+            <p>Complete the form to enable download and print options</p>
+            <p className="text-xs">Required: Store name, customer name, and at least one item</p>
+          </div>
+        )}
       </div>
     </div>
   )

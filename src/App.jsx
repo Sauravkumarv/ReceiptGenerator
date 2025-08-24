@@ -26,6 +26,7 @@ function App() {
             <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <ReceiptPreview />
             </div>
+            
           </div>
         </Layout>
       </ReceiptProvider>
