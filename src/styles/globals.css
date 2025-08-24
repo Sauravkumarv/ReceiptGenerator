@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+
+/* Custom Receipt Styles */
+@layer components {
+  .receipt-paper {
+    @apply bg-white shadow-xl font-mono;
+  }
+  
+  .receipt-header {
+    @apply text-center border-b-2 border-gray-800 pb-4 mb-4;
+  }
+  
+  .receipt-section {
+    @apply mb-6 pb-4;
+  }
+  
+  .receipt-total {
+    @apply border-t-2 border-gray-800 pt-4 font-bold;
+  }
+  
+  .form-section {
+    @apply mb-6 p-4 bg-gray-50 rounded-lg;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors;
+  }
+  
+  .btn-success {
+    @apply bg-success-500 text-white px-3 py-1 rounded-lg hover:bg-success-600 transition-colors;
+  }
+  
+  .input-field {
+    @apply w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  .glass-effect {
+    @apply bg-white/95 backdrop-blur-sm border border-white/20;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-200 hover:-translate-y-0.5;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-sm;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-sm hover:bg-gray-400;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .receipt-preview {
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  @page {
+    margin: 0.5in;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
