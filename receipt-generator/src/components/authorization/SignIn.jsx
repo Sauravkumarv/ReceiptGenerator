@@ -53,7 +53,7 @@ alert(res.data.message);
           alert("✅ Sign In Successful!");
           setLoading(false);
         }, 2000);
-        navigate("/");
+        navigate("/home");
       } catch (err) {
         setLoading(false);
         alert(err.response?.data?.message || "Something went wrong!");  

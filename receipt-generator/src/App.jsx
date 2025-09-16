@@ -8,6 +8,7 @@ import HelpPage from '@/components/pages/HelpPage'
 import ErrorBoundary from '@/components/common/ErrorBoundary'
 import SignUp from './components/authorization/SignUp'
 import SignIn from './components/authorization/SignIn'
+import LandingPage from './components/pages/LandingPage'
 
 function App() {
   return (
@@ -16,8 +17,12 @@ function App() {
         <Router>
           <Layout>
             <Routes>
+              {/* ✅ Default page = LandingPage */}
+              <Route path="/" element={<LandingPage />} />
+
+              {/* ✅ Actual Receipt Generator page ab /home pe hoga */}
               <Route
-                path="/"
+                path="/home"
                 element={
                   <>
                     <div className="text-center mb-8 animate-fade-in">
@@ -43,6 +48,7 @@ function App() {
                   </>
                 }
               />
+
               <Route path="/help" element={<HelpPage />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/signin" element={<SignIn />} />

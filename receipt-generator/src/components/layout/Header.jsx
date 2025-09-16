@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Receipt,
   Store,
@@ -11,6 +11,15 @@ import {
 const Header = () => {
   const location = useLocation(); // to highlight active link
   const currentPath = location.pathname;
+
+  const navigate=useNavigate();
+
+
+  const handleClick=()=>{
+    
+    navigate('/signin')
+  }
+  
 
   return (
     <nav className="bg-white shadow-lg border-b-4 border-primary-500 sticky top-0 z-50">
@@ -40,9 +49,9 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-6">
             {/* Home */}
             <Link
-              to="/"
+              to="/home"
               className={`flex items-center space-x-2 transition-colors ${
-                currentPath === "/"
+                currentPath === "/home"
                   ? "text-primary-600 font-semibold"
                   : "text-gray-600 hover:text-primary-600"
               }`}
@@ -65,7 +74,7 @@ const Header = () => {
             </Link>
 
             {/* Sign In */}
-            <Link
+            {/* <Link
               to="/signin"
               className={`flex items-center space-x-2 transition-colors ${
                 currentPath === "/signin"
@@ -75,10 +84,10 @@ const Header = () => {
             >
               <LogIn className="h-5 w-5" />
               <span>Sign In</span>
-            </Link>
+            </Link> */}
 
             {/* Sign Up */}
-            <Link
+            {/* <Link
               to="/signup"
               className={`flex items-center space-x-2 transition-colors ${
                 currentPath === "/signup"
@@ -88,7 +97,11 @@ const Header = () => {
             >
               <UserPlus className="h-5 w-5" />
               <span>Sign Up</span>
-            </Link>
+            </Link> */}
+
+            <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all" onClick={handleClick}>
+                Get Started
+              </button>
           </div>
 
           {/* Mobile menu button (you can expand later with dropdown) */}

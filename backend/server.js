@@ -12,7 +12,7 @@ dbConnect();
 dotenv.config();
 app.use(express.json());
 app.use(cors())
-express.urlencoded()
+express.urlencoded()  
 
 // app.get('/',(req,res)=>{
 //   res.json({message:"connected"})
