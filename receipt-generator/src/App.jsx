@@ -9,6 +9,7 @@ import ErrorBoundary from '@/components/common/ErrorBoundary'
 import SignUp from './components/authorization/SignUp'
 import SignIn from './components/authorization/SignIn'
 import LandingPage from './components/pages/LandingPage'
+import ProtectedRoute from './components/common/ProtectedRoute' // ✅ import
 
 function App() {
   return (
@@ -20,32 +21,34 @@ function App() {
               {/* ✅ Default page = LandingPage */}
               <Route path="/" element={<LandingPage />} />
 
-              {/* ✅ Actual Receipt Generator page ab /home pe hoga */}
+              {/* ✅ Protected /home route */}
               <Route
                 path="/home"
                 element={
-                  <>
-                    <div className="text-center mb-8 animate-fade-in">
-                      <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                        Receipt Generator
-                      </h1>
-                      <p className="text-gray-600">
-                        Create professional receipts in seconds
-                      </p>
-                    </div>
+                  <ProtectedRoute>
+                    <>
+                      <div className="text-center mb-8 animate-fade-in">
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">
+                          Receipt Generator
+                        </h1>
+                        <p className="text-gray-600">
+                          Create professional receipts in seconds
+                        </p>
+                      </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <div className="animate-slide-up">
-                        <ReceiptForm />
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div className="animate-slide-up">
+                          <ReceiptForm />
+                        </div>
+                        <div
+                          className="animate-slide-up"
+                          style={{ animationDelay: '0.1s' }}
+                        >
+                          <ReceiptPreview />
+                        </div>
                       </div>
-                      <div
-                        className="animate-slide-up"
-                        style={{ animationDelay: '0.1s' }}
-                      >
-                        <ReceiptPreview />
-                      </div>
-                    </div>
-                  </>
+                    </>
+                  </ProtectedRoute>
                 }
               />
 

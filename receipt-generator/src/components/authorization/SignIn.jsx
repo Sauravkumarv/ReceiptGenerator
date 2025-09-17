@@ -1,6 +1,7 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext"; 
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -8,6 +9,7 @@ const SignIn = () => {
     password: "",
   });
 
+  const { setIsAuthenticated } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false); // 👈 state for toggle
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -46,13 +48,16 @@ const SignIn = () => {
 const res=await axios.post(`${API_URL}/signin`,{
   email:form.email,
   password:form.password
-})
+},{ withCredentials: true } // important to send/receive HttpOnly cookie
+)
+setIsAuthenticated(true); // token cookie automatically set by backend
 alert(res.data.message);
+
 
         setTimeout(() => {
           alert("✅ Sign In Successful!");
           setLoading(false);
-        }, 2000);
+        }, 1000);
         navigate("/home");
       } catch (err) {
         setLoading(false);
