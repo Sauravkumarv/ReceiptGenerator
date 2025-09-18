@@ -1,25 +1,25 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Receipt,
   Store,
   HelpCircle,
-  UserPlus,
-  LogIn,
 } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
 
 const Header = () => {
-  const location = useLocation(); // to highlight active link
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const location = useLocation();
   const currentPath = location.pathname;
+  const navigate = useNavigate();
 
-  const navigate=useNavigate();
-
-
-  const handleClick=()=>{
-    
-    navigate('/signin')
-  }
-  
+  const handleClick = () => {
+    if (isAuthenticated) {
+      navigate("/home");
+    } else {
+      navigate("/signin");
+    }
+  };
 
   return (
     <nav className="bg-white shadow-lg border-b-4 border-primary-500 sticky top-0 z-50">
@@ -28,7 +28,7 @@ const Header = () => {
           {/* Logo */}
           <div className="flex items-center space-x-3">
             <Link
-              to="/"
+              to={isAuthenticated ? "/home" : "/"}
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
               <div className="bg-primary-600 p-2 rounded-lg">
@@ -47,79 +47,41 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-6">
-            {/* Home */}
-            <Link
-              to="/home"
-              className={`flex items-center space-x-2 transition-colors ${
-                currentPath === "/home"
-                  ? "text-primary-600 font-semibold"
-                  : "text-gray-600 hover:text-primary-600"
-              }`}
+            {isAuthenticated && (
+              <>
+                {/* Home */}
+                <Link
+                  to="/home"
+                  className={`flex items-center space-x-2 transition-colors ${
+                    currentPath === "/home"
+                      ? "text-primary-600 font-semibold"
+                      : "text-gray-600 hover:text-primary-600"
+                  }`}
+                >
+                  <Store className="h-5 w-5" />
+                  <span>Home</span>
+                </Link>
+
+                {/* Help */}
+                <Link
+                  to="/help"
+                  className={`flex items-center space-x-2 transition-colors ${
+                    currentPath === "/help"
+                      ? "text-primary-600 font-semibold"
+                      : "text-gray-600 hover:text-primary-600"
+                  }`}
+                >
+                  <HelpCircle className="h-5 w-5" />
+                  <span>Help</span>
+                </Link>
+              </>
+            )}
+
+            <button
+              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+              onClick={handleClick}
             >
-              <Store className="h-5 w-5" />
-              <span>Home</span>
-            </Link>
-
-            {/* Help */}
-            <Link
-              to="/help"
-              className={`flex items-center space-x-2 transition-colors ${
-                currentPath === "/help"
-                  ? "text-primary-600 font-semibold"
-                  : "text-gray-600 hover:text-primary-600"
-              }`}
-            >
-              <HelpCircle className="h-5 w-5" />
-              <span>Help</span>
-            </Link>
-
-            {/* Sign In */}
-            {/* <Link
-              to="/signin"
-              className={`flex items-center space-x-2 transition-colors ${
-                currentPath === "/signin"
-                  ? "text-primary-600 font-semibold"
-                  : "text-gray-600 hover:text-primary-600"
-              }`}
-            >
-              <LogIn className="h-5 w-5" />
-              <span>Sign In</span>
-            </Link> */}
-
-            {/* Sign Up */}
-            {/* <Link
-              to="/signup"
-              className={`flex items-center space-x-2 transition-colors ${
-                currentPath === "/signup"
-                  ? "text-primary-600 font-semibold"
-                  : "text-gray-600 hover:text-primary-600"
-              }`}
-            >
-              <UserPlus className="h-5 w-5" />
-              <span>Sign Up</span>
-            </Link> */}
-
-            <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all" onClick={handleClick}>
-                Get Started
-              </button>
-          </div>
-
-          {/* Mobile menu button (you can expand later with dropdown) */}
-          <div className="md:hidden">
-            <button className="text-gray-600 hover:text-primary-600">
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              {isAuthenticated ? "Dashboard" : "Get Started"}
             </button>
           </div>
         </div>
