@@ -11,13 +11,21 @@ function getCookie(name) {
 }
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Initial state mein hi cookie check karo
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = getCookie("authToken");
+    
+    return !!token;
+  });
 
   // Page load hone par cookie check karo
   useEffect(() => {
     const token = getCookie("authToken");
-    console.log("AuthContext - Token:", token);
-    setIsAuthenticated(!!token);
+   
+    
+    if (token) {
+      setIsAuthenticated(true);
+    }
   }, []);
 
   return (

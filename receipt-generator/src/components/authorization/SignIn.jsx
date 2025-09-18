@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext"; 
+import Toast from "../common/Toast";
 
 const SignIn = () => {
   const [form, setForm] = useState({
@@ -9,6 +10,7 @@ const SignIn = () => {
     password: "",
   });
 
+  const [toast, setToast] = useState(null);
   const { setIsAuthenticated } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false); // 👈 state for toggle
   const navigate = useNavigate();
@@ -45,26 +47,39 @@ const SignIn = () => {
     if (validate()) {
       setLoading(true);
       try {
-const res=await axios.post(`${API_URL}/signin`,{
-  email:form.email,
-  password:form.password
-},{ withCredentials: true } // important to send/receive HttpOnly cookie
-)
-setIsAuthenticated(true); // token cookie automatically set by backend
-alert(res.data.message);
-
-
+        const res = await axios.post(`${API_URL}/signin`, {
+          email: form.email,
+          password: form.password
+        }, { withCredentials: true });
+        
+        setIsAuthenticated(true);
+        
+        // Toast show karo
+        console.log("Setting success toast...");
+        setToast({ 
+          message: "Login successful! Redirecting to dashboard...", 
+          type: "success" 
+        });
+        console.log("Toast state:", { message: "Login successful! Redirecting to dashboard...", type: "success" });
+        
         setTimeout(() => {
-          alert("✅ Sign In Successful!");
           setLoading(false);
-        }, 1000);
-        navigate("/home");
+          navigate("/home");
+        }, 2000); // Toast dekhne ka time
+        
       } catch (err) {
         setLoading(false);
-        alert(err.response?.data?.message || "Something went wrong!");  
+        // Error toast show karo
+        console.log("Setting error toast...");
+        setToast({ 
+          message: err.response?.data?.message || "❌ Something went wrong!", 
+          type: "error" 
+        });
+        console.log("Error toast state:", { 
+          message: err.response?.data?.message || "❌ Something went wrong!", 
+          type: "error" 
+        });
       }
-
-      
     }
   };
 
@@ -137,13 +152,23 @@ alert(res.data.message);
 
           {/* Footer */}
           <p className="text-sm text-center mt-4">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <a href="/signup" className="text-blue-600 font-medium">
               Sign Up
             </a>
           </p>
         </div>
       </form>
+
+      {/* Toast render - Yeh missing tha */}
+      {console.log("Rendering toast component, toast state:", toast)}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
