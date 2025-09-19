@@ -11,6 +11,7 @@ import SignIn from "./components/authorization/SignIn";
 import LandingPage from "./components/pages/LandingPage";
 import ProtectedRoute from "./components/common/ProtectedRoute"; // ✅ import
 import LogoutRedirect from "./components/common/LogoutRedirect";
+import ContactSupport from "./components/pages/ContactSuuport";
 
 function App() {
   return (
@@ -58,6 +59,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <HelpPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/contactus"
+                element={
+                  <ProtectedRoute>
+                    <ContactSupport/>
                   </ProtectedRoute>
                 }
               />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+
 import { 
   HelpCircle, 
   FileText, 
@@ -15,9 +16,14 @@ import {
   AlertCircle,
   Info
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
+
 
 const HelpPage = () => {
   const [expandedSections, setExpandedSections] = useState({})
+
+  const navigate=useNavigate();
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -360,7 +366,7 @@ const HelpPage = () => {
               If you can't find the answer you're looking for, please contact our support team.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button onClick={()=>navigate('/contactus')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 Contact Support
               </button>
               <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
