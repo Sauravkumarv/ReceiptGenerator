@@ -3,7 +3,8 @@ const dotenv=require('dotenv');
 const dbConnect = require('./config/db');
 const router = require('./routes/SignUpRouter');
 const cors=require('cors')
-const cookieParser =require('cookie-parser')
+const cookieParser =require('cookie-parser');
+const {SupportRouter} = require('./routes/SupportRouter');
 
 const app=express();
 
@@ -27,7 +28,7 @@ app.use(cors({
 
 
 app.use('/',router)
-
+app.use('/help',SupportRouter)
 
 
 
