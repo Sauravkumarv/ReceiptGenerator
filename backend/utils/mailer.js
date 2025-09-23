@@ -35,4 +35,4 @@ const sendMail = async (to, subject, html) => {
   }
 };
 
-module.exports = { sendMail, isValidEmail };
+ module.exports = { sendMail, isValidEmail };

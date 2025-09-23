@@ -5,6 +5,8 @@ const router = require('./routes/SignUpRouter');
 const cors=require('cors')
 const cookieParser =require('cookie-parser');
 const {SupportRouter} = require('./routes/SupportRouter');
+const receiptRouter = require('./routes/receiptRoutes');
+const path = require("path");
 
 const app=express();
 
@@ -15,6 +17,7 @@ app.use(cookieParser())
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("uploads"));
  
 
 // app.get('/',(req,res)=>{
@@ -29,6 +32,7 @@ app.use(cors({
 
 app.use('/',router)
 app.use('/help',SupportRouter)
+app.use('/',receiptRouter)
 
 
 
