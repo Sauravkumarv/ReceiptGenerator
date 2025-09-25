@@ -61,16 +61,16 @@
   }
 
   /* Button hover fixes */
-  .btn-hover-fix {
+  /* .btn-hover-fix {
     @apply relative overflow-hidden;
   }
 
   .btn-hover-fix:hover {
-    @apply transform scale-105;
+    @apply transform scale-50;
   }
 
   .btn-hover-fix:active {
-    @apply transform scale-95;
+    @apply transform scale-20; */
   }
 
   /* Receipt grid improvements */
@@ -122,10 +122,10 @@
   }
 
   /* Button improvements */
-  .btn-improved {
+  /* .btn-improved {
     @apply relative overflow-hidden;
     @apply transform transition-all duration-200;
-    @apply hover:scale-105 active:scale-95;
+    @apply hover:scale-50 active:scale-20;
   }
 
   .btn-improved:before {
@@ -136,7 +136,7 @@
   .btn-improved:hover:before {
     @apply opacity-10;
   }
-}
+} */
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

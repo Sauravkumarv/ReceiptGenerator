@@ -6,6 +6,7 @@ const upload = require("../middleware/uploadMiddleware");
 
 // POST /upload
 router.post("/upload", upload.single("receiptPdf"), uploadReceipt);
+
 router.post("/check-receipt",checkReceipt)
 
 module.exports = router;

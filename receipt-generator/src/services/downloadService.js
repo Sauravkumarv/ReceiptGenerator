@@ -299,54 +299,41 @@ const createPDFFromData = (receiptData, calculations) => {
 }
 
 // 🔹 Try html2canvas first, fallback to direct PDF
-const downloadReceipt = async (receiptData, calculations) => {
-  let downloadBtn = null
-  let originalButtonState = null
-  
+const generateReceiptBlob = async (receiptData, calculations) => {
   try {
-    downloadBtn = findDownloadButton()
-    originalButtonState = updateButtonState(downloadBtn, 'Generating PDF...', true)
-    
-    console.log('Starting PDF generation...')
-    console.log('Receipt data:', receiptData)
-    console.log('Calculations:', calculations)
-    
-    // FIRST: Try to find receipt element for html2canvas
-    let receiptElement = document.querySelector('.receipt-preview') ||
-                        document.querySelector('#receipt-content') ||
-                        document.querySelector('[data-receipt]')
-    
-    let useHtml2Canvas = false
-    
+    console.log('Starting PDF blob generation...');
+    console.log('Receipt data:', receiptData);
+    console.log('Calculations:', calculations);
+
+    // Try to find receipt element
+    const receiptElement =
+      document.querySelector('.receipt-preview') ||
+      document.querySelector('#receipt-content') ||
+      document.querySelector('[data-receipt]');
+
+    let useHtml2Canvas = false;
+    let pdf = null;
+
     if (receiptElement) {
-      const rect = receiptElement.getBoundingClientRect()
-      const computedStyle = window.getComputedStyle(receiptElement)
-      
-      // Only use html2canvas if element is visible and has content
-      if (rect.width > 0 && rect.height > 0 && 
-          computedStyle.display !== 'none' && 
-          computedStyle.visibility !== 'hidden' &&
-          receiptElement.textContent.trim().length > 0) {
-        useHtml2Canvas = true
-        console.log('Element found and visible, trying html2canvas...')
+      const rect = receiptElement.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(receiptElement);
+
+      if (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        computedStyle.display !== 'none' &&
+        computedStyle.visibility !== 'hidden' &&
+        receiptElement.textContent.trim().length > 0
+      ) {
+        useHtml2Canvas = true;
+        console.log('Element found and visible, using html2canvas...');
       } else {
-        console.log('Element found but not suitable for html2canvas:', {
-          dimensions: { width: rect.width, height: rect.height },
-          display: computedStyle.display,
-          visibility: computedStyle.visibility,
-          hasText: receiptElement.textContent.trim().length > 0
-        })
+        console.log('Element found but not suitable for html2canvas');
       }
-    } else {
-      console.log('No receipt element found, using direct PDF generation')
     }
-    
-    let pdf = null
-    
+
     if (useHtml2Canvas) {
       try {
-        console.log('Attempting html2canvas capture...')
-        
         const canvas = await html2canvas(receiptElement, {
           scale: 1,
           useCORS: true,
@@ -356,107 +343,87 @@ const downloadReceipt = async (receiptData, calculations) => {
           width: receiptElement.offsetWidth,
           height: receiptElement.offsetHeight,
           onclone: (clonedDoc) => {
-            const clonedElement = clonedDoc.body.querySelector('.receipt-preview') || 
-                                 clonedDoc.body.querySelector('#receipt-content')
+            const clonedElement =
+              clonedDoc.body.querySelector('.receipt-preview') ||
+              clonedDoc.body.querySelector('#receipt-content');
             if (clonedElement) {
-              clonedElement.style.position = 'static'
-              clonedElement.style.transform = 'none'
-              clonedElement.style.visibility = 'visible'
-              clonedElement.style.opacity = '1'
-              clonedElement.style.background = '#ffffff'
+              clonedElement.style.position = 'static';
+              clonedElement.style.transform = 'none';
+              clonedElement.style.visibility = 'visible';
+              clonedElement.style.opacity = '1';
+              clonedElement.style.background = '#ffffff';
             }
-          }
-        })
-        
-        console.log('Canvas generated:', { width: canvas.width, height: canvas.height })
-        
+          },
+        });
+
         // Check if canvas has content
-        const ctx = canvas.getContext('2d')
-        const imageData = ctx.getImageData(0, 0, Math.min(50, canvas.width), Math.min(50, canvas.height))
-        let hasContent = false
-        
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          Math.min(50, canvas.width),
+          Math.min(50, canvas.height)
+        );
+        let hasContent = false;
         for (let i = 0; i < imageData.data.length; i += 4) {
-          const r = imageData.data[i]
-          const g = imageData.data[i + 1] 
-          const b = imageData.data[i + 2]
-          const a = imageData.data[i + 3]
-          
+          const [r, g, b, a] = [
+            imageData.data[i],
+            imageData.data[i + 1],
+            imageData.data[i + 2],
+            imageData.data[i + 3],
+          ];
           if (a > 0 && (r < 240 || g < 240 || b < 240)) {
-            hasContent = true
-            break
+            hasContent = true;
+            break;
           }
         }
-        
+
         if (hasContent && canvas.width > 0 && canvas.height > 0) {
-          console.log('Canvas has content, creating PDF from image...')
-          
-          const imgData = canvas.toDataURL('image/png', 1.0)
-          pdf = new jsPDF('p', 'mm', 'a4')
-          
-          const pdfWidth = 210
-          const pdfHeight = 297
-          const canvasAspectRatio = canvas.height / canvas.width
-          
-          let imgWidth = pdfWidth - 20 // margins
-          let imgHeight = imgWidth * canvasAspectRatio
-          
+          console.log('Canvas has content, creating PDF from image...');
+          const imgData = canvas.toDataURL('image/png', 1.0);
+          pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = 210;
+          const pdfHeight = 297;
+          const canvasAspectRatio = canvas.height / canvas.width;
+
+          let imgWidth = pdfWidth - 20; // margins
+          let imgHeight = imgWidth * canvasAspectRatio;
+
           if (imgHeight > pdfHeight - 20) {
-            imgHeight = pdfHeight - 20
-            imgWidth = imgHeight / canvasAspectRatio
+            imgHeight = pdfHeight - 20;
+            imgWidth = imgHeight / canvasAspectRatio;
           }
-          
-          const xOffset = (pdfWidth - imgWidth) / 2
-          const yOffset = 10
-          
-          pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight)
+
+          const xOffset = (pdfWidth - imgWidth) / 2;
+          const yOffset = 10;
+
+          pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
         } else {
-          console.log('Canvas is blank, falling back to direct PDF generation')
-          pdf = null // Force fallback
+          console.log('Canvas blank, fallback to direct PDF generation');
+          pdf = null;
         }
-        
       } catch (canvasError) {
-        console.log('html2canvas failed:', canvasError.message)
-        pdf = null // Force fallback
+        console.log('html2canvas failed:', canvasError.message);
+        pdf = null;
       }
     }
-    
+
     // FALLBACK: Create PDF directly from data
     if (!pdf) {
-      console.log('Creating PDF directly from data...')
-      pdf = createPDFFromData(receiptData, calculations)
+      console.log('Creating PDF directly from data...');
+      pdf = createPDFFromData(receiptData, calculations);
     }
-    
-    // Save the PDF
-    const safeReceiptNumber = sanitizeFilename(receiptData.receiptNumber || 'unnamed')
-    const safeDate = receiptData.receiptDate || new Date().toISOString().split('T')[0]
-    const filename = `receipt-${safeReceiptNumber}-${safeDate}.pdf`
-    
-    console.log('Saving PDF:', filename)
-    pdf.save(filename)
-    
-    // Reset button
-    if (downloadBtn && originalButtonState) {
-      updateButtonState(downloadBtn, originalButtonState.text, originalButtonState.disabled)
-    }
-    
-    console.log('PDF generated successfully!')
-    return { success: true, filename, format: 'pdf' }
-    
+
+    // Convert PDF to blob instead of saving
+    const pdfBlob = pdf.output('blob');
+    console.log('PDF blob generated successfully!');
+    return pdfBlob;
+
   } catch (error) {
-    console.error('PDF generation failed completely:', error)
-    
-    if (downloadBtn) {
-      updateButtonState(downloadBtn, 'Download PDF', false)
-    }
-    
-    // Last resort: text download
-    if (confirm(`PDF generation failed: ${error.message}\n\nWould you like to download as a text file instead?`)) {
-      return downloadTextFallback(receiptData, calculations)
-    }
-    
-    throw error
+    console.error('PDF blob generation failed:', error);
+    throw error;
   }
-}
+};
 
 // 🔹 Text fallback
 const downloadTextFallback = (receiptData, calculations) => {
@@ -925,7 +892,7 @@ const testPDFGeneration = (receiptData, calculations) => {
 }
 
 export const downloadService = {
-  downloadReceipt,
+  generateReceiptBlob,
   printReceipt,
   testPDFGeneration, // For testing
 }
