@@ -4,7 +4,7 @@ const dotenv=require('dotenv')
 
 dotenv.config();
 
-const secretKey=process.env.SERCRET_KEY;
+const secretKey=process.env.SECRET_KEY;
 
 const RegisterNewUser=async(req,res)=>{
 try {
@@ -82,5 +82,18 @@ const Logout = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    res.status(200).json({
+      id: req.user._id,
+      name: req.user.fullName,
+      email: req.user.email,
+      // avatar: req.user.avatar || "https://ui-avatars.com/api/?name=" + req.user.fullName,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "❌ Server error", error: error.message });
+  }
+};
 
-module.exports={RegisterNewUser,LoginUser,Logout};
+
+module.exports={RegisterNewUser,LoginUser,Logout,getUserProfile};

@@ -41,43 +41,49 @@ const SignIn = () => {
   };
 
   // Handle form submit
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     const API_URL = import.meta.env.VITE_API_URL;
     e.preventDefault();
+  
     if (validate()) {
       setLoading(true);
       try {
-        const res = await axios.post(`${API_URL}/signin`, {
-          email: form.email,
-          password: form.password
-        }, { withCredentials: true });
-        
+        const res = await axios.post(
+          `${API_URL}/signin`,
+          {
+            email: form.email,
+            password: form.password,
+          },
+          { withCredentials: true } // ✅ still keep for cookie
+        );
+  
+        // 1️⃣ Save token to localStorage
+        localStorage.setItem("token", res.data.token);
+  
+        // 2️⃣ Optionally save user info
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+  
+        // 3️⃣ Set auth context
         setIsAuthenticated(true);
-        
-        // Toast show karo
-        console.log("Setting success toast...");
-        setToast({ 
-          message: "Login successful! Redirecting to dashboard...", 
-          type: "success" 
+  
+        // 4️⃣ Show success toast
+        setToast({
+          message: "Login successful! Redirecting to dashboard...",
+          type: "success",
         });
-        console.log("Toast state:", { message: "Login successful! Redirecting to dashboard...", type: "success" });
-        
+  
+        // 5️⃣ Redirect after toast
         setTimeout(() => {
           setLoading(false);
           navigate("/home");
-        }, 2000); // Toast dekhne ka time
-        
+        }, 2000);
+  
       } catch (err) {
         setLoading(false);
-        // Error toast show karo
-        console.log("Setting error toast...");
-        setToast({ 
-          message: err.response?.data?.message || "❌ Something went wrong!", 
-          type: "error" 
-        });
-        console.log("Error toast state:", { 
-          message: err.response?.data?.message || "❌ Something went wrong!", 
-          type: "error" 
+  
+        setToast({
+          message: err.response?.data?.message || "❌ Something went wrong!",
+          type: "error",
         });
       }
     }

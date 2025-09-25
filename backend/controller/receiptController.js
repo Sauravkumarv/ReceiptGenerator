@@ -68,4 +68,39 @@ const checkReceipt = async (req, res) => {
   res.json({ exists: !!exists });
 }
 
-module.exports = { uploadReceipt, checkReceipt }
+
+
+// Get all receipts for a specific user
+const getUserReceipts = async (req, res) => {
+  try {
+    const userId = req.params.userId; // user ID from request params
+
+    const receipts = await Receipt.find({ userId }).sort({ createdAt: -1 }); // latest first
+
+    if (!receipts || receipts.length === 0) {
+      return res.status(404).json({ message: "No receipts found for this user" });
+    }
+console.log(receipts)
+    // Return only necessary fields
+    const data = receipts.map(r => ({
+      id: r._id,
+      filename: r.filename,
+      originalName: r.originalName,
+      fileUrl: r.fileUrl,
+      receiptNumber: r.receiptNumber,
+      storeName: r.storeName,
+      customerName: r.customerName,
+      subtotal: r.subtotal,
+      tax: r.tax,
+      total: r.total,
+      createdAt: r.createdAt
+    }));
+
+    res.json({ receipts: data });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { uploadReceipt, checkReceipt,getUserReceipts }

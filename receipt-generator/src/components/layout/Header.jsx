@@ -23,7 +23,7 @@ const Header = () => {
 
   const handleClick = () => {
     if (isAuthenticated) {
-      navigate("/home");
+      navigate("/dashboard");
     } else {
       navigate("/signin");
     }
