@@ -23,11 +23,17 @@ const ReceiptInfoSection = () => {
 
   // Generate a random receipt number if one doesn't exist
   const generateReceiptNumber = () => {
-    const prefix = 'RCP-'
-    const timestamp = Date.now().toString().slice(-6)
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-    return `${prefix}${timestamp}-${random}`
-  }
+    const prefix = 'RCP-';
+  
+    // Last 5 digits of timestamp (milliseconds)
+    const timestampPart = Date.now().toString().slice(-5); 
+  
+    // 3–5 digit random number to make it 8–10 digits total
+    const randomPart = Math.floor(Math.random() * 100000).toString().padStart(3, '0');
+  
+    return `${prefix}${timestampPart}${randomPart}`; // e.g., RCP-123456789
+  };
+  
 
   return (
     <FormSection
@@ -44,6 +50,7 @@ const ReceiptInfoSection = () => {
               onChange={(e) => handleChange('receiptNumber', e.target.value)}
               placeholder="RCP-123456-001"
               icon={Hash}
+             
             />
             {!state.receiptNumber && (
               <button

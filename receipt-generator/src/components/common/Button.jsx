@@ -37,7 +37,7 @@ const Button = ({
         rounded-lg transition-all duration-200 font-semibold 
         flex items-center justify-center gap-2 
         disabled:cursor-not-allowed disabled:opacity-50
-        hover:shadow-lg transform hover:-translate-y-0.5 hover:scale-105
+        hover:shadow-lg transform hover:-translate-y-0.1 hover:scale-100
         active:scale-95
         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
         ${loading ? 'cursor-wait' : ''}

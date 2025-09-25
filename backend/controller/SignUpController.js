@@ -51,7 +51,7 @@ const LoginUser = async (req, res) => {
       httpOnly: false, // Frontend se access karne ke liye
       secure: false, // true in production (HTTPS)
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge:1*24*60*60* 1000, // 1 days
     });
 
     res.status(200).json({
