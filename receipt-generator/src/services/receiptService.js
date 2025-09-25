@@ -10,9 +10,7 @@ const receiptService = {
     if (!token) throw new Error("No auth token found");
 
     const res = await axios.get(`${API_URL}/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}` // send token in headers
-      }
+      withCredentials:true
     });
     return res.data; // { _id, name, email, avatar }
   },
@@ -22,10 +20,8 @@ const receiptService = {
     const token = localStorage.getItem('token'); // include token here too
     if (!token) throw new Error("No auth token found");
 
-    const res = await axios.get(`${API_URL}/file/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+    const res = await axios.get(`${API_URL}/file`, {
+     withCredentials: true
     });
     return res.data; // { receipts: [...] }
   },

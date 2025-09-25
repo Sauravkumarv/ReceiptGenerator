@@ -44,8 +44,10 @@ const LoginUser = async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: "Invalid Email or Password" });
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id, email: user.email }, secretKey);
-
+    const token = jwt.sign(
+      { id: user._id, email: user.email, fullName: user.fullName },
+      secretKey
+    );
     // Send token as regular cookie (not HttpOnly so frontend can access)
     res.cookie("authToken", token, {
       httpOnly: false, // Frontend se access karne ke liye
@@ -59,8 +61,8 @@ const LoginUser = async (req, res) => {
       token, // frontend ko bhejo
       user: {
         id: user._id,
-        fullname: user.fullName,
         email: user.email,
+        fullName: user.fullName,
       },
     });
   } catch (error) {
@@ -84,11 +86,10 @@ const Logout = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    res.status(200).json({
-      id: req.user._id,
-      name: req.user.fullName,
-      email: req.user.email,
-      // avatar: req.user.avatar || "https://ui-avatars.com/api/?name=" + req.user.fullName,
+        res.status(200).json({
+          id: req.user.id,
+          fullName: req.user.fullName,
+          email: req.user.email,
     });
   } catch (error) {
     res.status(500).json({ message: "❌ Server error", error: error.message });

@@ -99,7 +99,7 @@ const checkReceiptExists = async (receiptNumber) => {
   formData.append("total", total);
 
         const response = await axios.post(`${API_URL}/upload`, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
+           withCredentials: true,
         });
 
         if (response.data.success) {
